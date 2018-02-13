@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using CalculatorPro.Classes;
 
 namespace CalculatorPro
 {
@@ -23,6 +24,11 @@ namespace CalculatorPro
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void calculateButton_Click(object sender, RoutedEventArgs e)
+        {
+            resultTextBox.Text=BasicCalculator.Addition(Convert.ToDouble(factor1TextBox.Text), Convert.ToDouble(factor2TextBox.Text)).ToString();
         }
     }
 }

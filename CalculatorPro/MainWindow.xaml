@@ -7,6 +7,9 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        
+        <TextBox Name="factor1TextBox" Margin="60,130,400,130"></TextBox>
+        <TextBox Name="factor2TextBox" Margin="130,130,330,130"></TextBox>
+        <TextBox Name="resultTextBox" Margin="200,130,260,130"></TextBox>
+        <Button Name="calculateButton" Margin="200,200,100,50" Click="calculateButton_Click">Oblicz</Button>
     </Grid>
 </Window>
