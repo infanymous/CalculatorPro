@@ -17,85 +17,79 @@ namespace CalculatorPro.Classes
             Expression = expression;
         }
 
-        public double Solve()
+        public double ConvertToONP()
         {
+            //22.5 + 8 * 3 / 2
             int digitsNumber = 0;
-            double result=0;
-            double x = 0, y = 0;
-            
 
-            int[] priorities = Decipher();
+            Stack<string> Symbols = new Stack<string>();
+            Queue<string> Output = new Queue<string>();
 
-            for (int i = 0; i < priorities.Length; i++)
+            for (int i = 0; i < expression.Length; i++)
             {
-                if (priorities[i]==3 || priorities[i]==4) //check for * or / expression (highest priority)
+                int j = i;
+                while (((int)expression[j]>=48 && (int)expression[j]<=57) || (int)expression[j]==46) //if first symbol is a number then we check for the whole number (e.g. we read 3, so we check if its not 35.5)
                 {
-                    int j = i - 1; //if we find we can check for length of number used in expression (from the left thus i-1)
-                    while (priorities[j] == 0 || priorities[j]==5) //getting whole number on left from * (or /)
-                    {
-                        digitsNumber++;
-                        priorities[j] = -1;
-                        j--;
-                        
-                    }
-                    x = Double.Parse(expression.Substring(i-digitsNumber,digitsNumber));
-
-                    j = i + 1;
-                    digitsNumber = 0;
-                    while (priorities[j] == 0 || priorities[j] == 5) //getting whole number on right from * (or /)
-                    {
-                        digitsNumber++;
-                        priorities[j] = -1;
-                        j++;
-                    }
-                    x = Double.Parse(expression.Substring(i + 1, digitsNumber));
-
-                    if (priorities[i] == 3) result = x * y;
-                    if (priorities[i] == 4) result = x / y;//dodac opcje dzielenia przez zero!
-                    priorities[i] = -1; //on the end counted expression is signed as "-1"
-                    i += digitsNumber; //we dont need to check couple (min. 1) chars cus we know its a number 
+                    digitsNumber++;
+                    j++;
                 }
-            }
-            
+                if (digitsNumber > 0) Output.Enqueue(expression.Substring(i, digitsNumber)); //save read number in queue
+                i += digitsNumber;
+                digitsNumber = 0;
 
-            return result;
-        }
-
-        public int[] Decipher()
-        {
-            int[] priorities = new int[expression.Length];
-
-            for (int i = 0; i < priorities.Length; i++)
-            {
-                if ((int)expression[i] >= 48 && (int)expression[i] <= 57)
+               switch((int)expression[i])// >= 40 && expression[j] <= 47 && expression[j] != 46 && expression[j] != 44)
                 {
-                    priorities[i] = 0;         //digits are zeroes
-                }
+                    case 40: // (
+                        Symbols.Push(expression.Substring(i,1));
+                        break;
 
-                switch ((int)expression[i])
-                {
-                    case 43:
-                        priorities[i] = 1;     // "+" means 1
+                    case 41: // )
+                        do
+                        {
+                            Output.Enqueue(Symbols.Pop());
+                        } while (Symbols.Peek() != "(");
+                        Symbols.Pop();
                         break;
-                    case 45:
-                        priorities[i] = 2;     // "-" means 2
+
+                    case 42: // *
+                        while (Symbols.Peek()=="/")
+                        {
+                            Output.Enqueue(Symbols.Pop());
+                        }
+                        Symbols.Push(expression.Substring(i, 1));
                         break;
-                    case 42:
-                        priorities[i] = 3;     // "*" means 3
+
+                    case 43: // +
+                        while (Symbols.Peek() != "(")
+                        {
+                            Output.Enqueue(Symbols.Pop());
+                        }
+                        Symbols.Push(expression.Substring(i, 1));
                         break;
+
+                    case 45: // -
+                        while (Symbols.Peek() != "(")
+                        {
+                            Output.Enqueue(Symbols.Pop());
+                        }
+                        Symbols.Push(expression.Substring(i, 1));
+                        break;
+
                     case 47:
-                        priorities[i] = 4;     // "/" means 4
+                        while (Symbols.Peek() == "*")
+                        {
+                            Output.Enqueue(Symbols.Pop());
+                        }
+                        Symbols.Push(expression.Substring(i, 1));
                         break;
-                    case 46:
-                        priorities[i] = 5;    // "." means 5
-                        break;
+
                     default:
                         break;
                 }
-
             }
-
-            return priorities;
+            Symbols.
         }
+
+       
     }
 }
