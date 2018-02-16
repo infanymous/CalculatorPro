@@ -17,9 +17,9 @@ namespace CalculatorPro.Classes
             Expression = expression;
         }
 
-        public double ConvertToONP()
+        public Queue<string> ConvertToONP()
         {
-            //22.5 + 8 * 3 / 2
+
             int digitsNumber = 0;
 
             Stack<string> Symbols = new Stack<string>();
@@ -28,19 +28,27 @@ namespace CalculatorPro.Classes
             for (int i = 0; i < expression.Length; i++)
             {
                 int j = i;
-                while (((int)expression[j]>=48 && (int)expression[j]<=57) || (int)expression[j]==46) //if first symbol is a number then we check for the whole number (e.g. we read 3, so we check if its not 35.5)
+                while (((int)expression[j] >= 48 && (int)expression[j] <= 57) || (int)expression[j] == 46) //if first symbol is a number then we check for the whole number (e.g. we read 3, so we check if its not 35.5)
                 {
                     digitsNumber++;
-                    j++;
+                    if (j < expression.Length - 1)
+                    {
+                        j++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+
                 }
                 if (digitsNumber > 0) Output.Enqueue(expression.Substring(i, digitsNumber)); //save read number in queue
-                i += digitsNumber;
+                if (i + digitsNumber <= expression.Length - 1) i += digitsNumber;
                 digitsNumber = 0;
 
-               switch((int)expression[i])// >= 40 && expression[j] <= 47 && expression[j] != 46 && expression[j] != 44)
+                switch ((int)expression[i])// >= 40 && expression[j] <= 47 && expression[j] != 46 && expression[j] != 44)
                 {
                     case 40: // (
-                        Symbols.Push(expression.Substring(i,1));
+                        Symbols.Push(expression.Substring(i, 1));
                         break;
 
                     case 41: // )
@@ -52,7 +60,7 @@ namespace CalculatorPro.Classes
                         break;
 
                     case 42: // *
-                        while (Symbols.Peek()=="/")
+                        while (Symbols.Any() && Symbols.Peek() == "/")
                         {
                             Output.Enqueue(Symbols.Pop());
                         }
@@ -60,7 +68,7 @@ namespace CalculatorPro.Classes
                         break;
 
                     case 43: // +
-                        while (Symbols.Peek() != "(")
+                        while (Symbols.Any() && Symbols.Peek() != "(")
                         {
                             Output.Enqueue(Symbols.Pop());
                         }
@@ -68,15 +76,15 @@ namespace CalculatorPro.Classes
                         break;
 
                     case 45: // -
-                        while (Symbols.Peek() != "(")
+                        while (Symbols.Any() && Symbols.Peek() != "(")
                         {
                             Output.Enqueue(Symbols.Pop());
                         }
                         Symbols.Push(expression.Substring(i, 1));
                         break;
 
-                    case 47:
-                        while (Symbols.Peek() == "*")
+                    case 47: // / 
+                        while (Symbols.Any() && Symbols.Peek() == "*" && Symbols.Peek() != "(")
                         {
                             Output.Enqueue(Symbols.Pop());
                         }
@@ -87,9 +95,56 @@ namespace CalculatorPro.Classes
                         break;
                 }
             }
-            Symbols.
+            while (Symbols.Any())
+            {
+                Output.Enqueue(Symbols.Pop());
+            }
+            return Output;
         }
 
-       
+        public string CountONP()
+        {
+            Queue<string> Symbols = ConvertToONP();
+            Stack<double> Numbers = new Stack<double>();
+
+            foreach (string item in Symbols)
+            {
+                if ((int)item[0] >= 48 && (int)item[0] <= 57)
+                {
+                    Numbers.Push(Double.Parse(item));
+                }
+                else
+                {
+                    double a;
+                    switch ((int)item[0])
+                    {
+                        case 42: // *
+                            a = Numbers.Pop();
+                            Numbers.Push(Numbers.Pop() * a);
+                            break;
+
+                        case 43: // +
+                            a = Numbers.Pop();
+                            Numbers.Push(Numbers.Pop() + a);
+                            break;
+
+                        case 45: // -
+                            a = Numbers.Pop();
+                            Numbers.Push(Numbers.Pop() - a);
+                            break;
+
+                        case 47: // / 
+                            a = Numbers.Pop();
+                            Numbers.Push(Numbers.Pop() / a);
+                            break;
+
+                        default:
+                            break;
+
+                    }
+                }
+            }
+            return Numbers.Pop().ToString();
+        }
     }
 }
