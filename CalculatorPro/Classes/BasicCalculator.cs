@@ -42,9 +42,10 @@ namespace CalculatorPro.Classes
 
                 }
                 if (digitsNumber > 0) Output.Enqueue(expression.Substring(i, digitsNumber)); //save read number in queue
-                if (i + digitsNumber <= expression.Length - 1) i += digitsNumber;
+                if (i + digitsNumber <= expression.Length) i += digitsNumber;
                 digitsNumber = 0;
 
+                if(i<expression.Length)
                 switch ((int)expression[i])// >= 40 && expression[j] <= 47 && expression[j] != 46 && expression[j] != 44)
                 {
                     case 40: // (
@@ -68,21 +69,14 @@ namespace CalculatorPro.Classes
                         break;
 
                     case 43: // +
+                    case 45: // - 
                         while (Symbols.Any() && Symbols.Peek() != "(")
                         {
                             Output.Enqueue(Symbols.Pop());
                         }
                         Symbols.Push(expression.Substring(i, 1));
                         break;
-
-                    case 45: // -
-                        while (Symbols.Any() && Symbols.Peek() != "(")
-                        {
-                            Output.Enqueue(Symbols.Pop());
-                        }
-                        Symbols.Push(expression.Substring(i, 1));
-                        break;
-
+                        
                     case 47: // / 
                         while (Symbols.Any() && Symbols.Peek() == "*" && Symbols.Peek() != "(")
                         {
