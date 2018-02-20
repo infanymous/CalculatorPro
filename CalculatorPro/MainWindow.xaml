@@ -8,7 +8,7 @@
         Title="MainWindow" Height="350" Width="525">
     
     
-    <ContentControl Name="ContentHolder"/>
+    <ContentControl Name="ContentHolder" Content="{}"/>
 
     
 </Window>
